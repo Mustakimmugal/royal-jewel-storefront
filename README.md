@@ -69,4 +69,3 @@ Jewellery and editorial photos are remote Pexels placeholders. Google Fonts are 
 - https://www.pexels.com/photo/close-up-shot-of-gold-earrings-12194363/
 - https://www.pexels.com/photo/gold-necklace-with-a-pendant-12217206/
 - https://www.pexels.com/photo/display-of-jewelry-20858959/
-
