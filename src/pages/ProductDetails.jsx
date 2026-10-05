@@ -7,6 +7,8 @@ import { useToast } from "../hooks/useToast";
 import ProductCard from "../components/ProductCard";
 import SectionTitle from "../components/SectionTitle";
 import { useStore } from "../hooks/useStore";
+import { formatINR } from "../utils/currency";
+import { freeShippingThreshold } from "../data/storeSettings";
 
 export default function ProductDetails() {
   const { productId } = useParams();
@@ -42,12 +44,12 @@ export default function ProductDetails() {
           <div className="detail-copy">
             <p className="eyebrow">{product.category}{product.badge ? " · " + product.badge : ""}</p>
             <h1>{product.name}</h1>
-            <p className="detail-price">{"$" + product.price.toFixed(2)} {product.oldPrice && <del className="ml-2 text-[10px] font-normal text-stone">{"$" + product.oldPrice.toFixed(2)}</del>}</p>
-            <div className="detail-rating">★★★★★ <small>{product.rating.toFixed(1)} · {product.reviews} thoughtful reviews</small></div>
+            <p className="detail-price">{formatINR(product.price)} {product.oldPrice && <del className="detail-old-price">{formatINR(product.oldPrice)}</del>}</p>
+            <div className="detail-rating"><span aria-label={product.rating.toFixed(1) + " out of 5 stars"}>★★★★★</span> <small>{product.rating.toFixed(1)} · {product.reviews} thoughtful reviews</small></div>
             <p className="detail-description">{product.description}</p>
             <hr className="detail-rule" />
             <p className="detail-label">Material</p>
-            <p className="m-0 text-[10px] text-stone">{product.material}</p>
+            <p className="detail-material m-0 text-stone">{product.material}</p>
             <hr className="detail-rule" />
             <p className="detail-label">Choose your size</p>
             <div className="size-list">
@@ -70,7 +72,7 @@ export default function ProductDetails() {
             }}><FiHeart /> {saved ? "Saved to your wishlist" : "Save to wishlist"}</button>
             <p className="detail-note">Selected: {selectedSize}. Orders are wrapped with care and ready for gifting.</p>
             <hr className="detail-rule" />
-            <div className="grid gap-3 text-[9px] text-stone"><span className="flex items-center gap-2"><FiTruck className="text-gold-deep" /> Complimentary delivery over $150</span><span className="flex items-center gap-2"><FiShield className="text-gold-deep" /> 30-day easy returns</span><span className="flex items-center gap-2"><FiHeart className="text-gold-deep" /> Gift-ready keepsake packaging</span><span className="flex items-center gap-2"><FiCheck className="text-gold-deep" /> Thoughtfully selected materials</span></div>
+            <div className="detail-promises"><span className="flex items-center gap-2"><FiTruck className="text-gold-deep" /> Complimentary delivery over {formatINR(freeShippingThreshold)}</span><span className="flex items-center gap-2"><FiShield className="text-gold-deep" /> 30-day easy returns</span><span className="flex items-center gap-2"><FiHeart className="text-gold-deep" /> Gift-ready keepsake packaging</span><span className="flex items-center gap-2"><FiCheck className="text-gold-deep" /> Thoughtfully selected materials</span></div>
           </div>
         </section>
       </div>

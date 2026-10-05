@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FiArrowUpRight, FiHeart, FiShoppingBag } from "react-icons/fi";
 import { useToast } from "../hooks/useToast";
 import { useStore } from "../hooks/useStore";
+import { formatINR } from "../utils/currency";
 
 export default function ProductCard({ product, index = 0 }) {
   const showToast = useToast();
@@ -36,8 +37,8 @@ export default function ProductCard({ product, index = 0 }) {
         <div className="product-meta"><span>{product.category}</span><span>★★★★★ <small>{product.rating.toFixed(1)}</small></span></div>
         <Link to={"/product/" + product.id} className="product-name">{product.name}</Link>
         <div className="product-price-line">
-          <strong>{"$" + product.price.toFixed(2)}</strong>
-          {product.oldPrice && <del>{"$" + product.oldPrice.toFixed(2)}</del>}
+          <strong>{formatINR(product.price)}</strong>
+          {product.oldPrice && <del>{formatINR(product.oldPrice)}</del>}
           <button type="button" className="product-bag" aria-label={"Add " + product.name + " to bag"} onClick={() => {
             addToCart(product);
             showToast(product.name + " added to your bag.");

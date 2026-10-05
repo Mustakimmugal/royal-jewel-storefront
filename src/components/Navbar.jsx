@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FiArrowUpRight, FiHeart, FiMenu, FiSearch, FiShoppingBag, FiX } from "react-icons/fi";
 import { useStore } from "../hooks/useStore";
+import { formatINR } from "../utils/currency";
+import { freeShippingThreshold } from "../data/storeSettings";
 
 const navItems = [
   { label: "Home", to: "/" },
@@ -27,7 +29,7 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="announcement-bar"><span>Complimentary delivery on orders over $150</span><i>✧</i><span>Thoughtfully made, forever treasured</span></div>
+      <div className="announcement-bar"><span>{"Complimentary delivery on orders over " + formatINR(freeShippingThreshold)}</span><i>✧</i><span>Thoughtfully made, forever treasured</span></div>
       <header className="site-header">
         <div className="navbar page-wrap">
           <button className="mobile-menu-toggle" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} onClick={() => setMenuOpen(!menuOpen)}>

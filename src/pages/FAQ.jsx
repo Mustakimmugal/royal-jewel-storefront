@@ -4,12 +4,14 @@ import { FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { usePageMeta } from "../hooks/usePageMeta";
 import PageIntro from "../components/PageIntro";
+import { formatINR } from "../utils/currency";
+import { freeShippingThreshold } from "../data/storeSettings";
 
 const questions = [
   { question: "What materials are used in your jewellery?", answer: "Each product page lists its materials. The collection includes gold vermeil, gold-plated brass, recycled sterling silver, and carefully selected decorative stones. Please check the individual product details for the exact materials." },
   { question: "How should I care for my pieces?", answer: "Keep jewellery dry and away from perfumes, lotions, and household chemicals. Store each piece separately in a soft pouch or its keepsake box, and gently polish with a soft, dry cloth." },
   { question: "Is gift packaging available?", answer: "Yes. Each order is presented in our keepsake packaging, ready to give or to keep. Gift notes can be added once a real checkout experience is connected." },
-  { question: "How does shipping work?", answer: "The sample storefront shows complimentary delivery on orders over $150. Actual delivery regions, timelines, and fees should be added by the store owner before launch." },
+  { question: "How does shipping work?", answer: `The sample storefront shows complimentary delivery on orders over ${formatINR(freeShippingThreshold)}. Actual delivery regions, timelines, and fees should be added by the store owner before launch.` },
   { question: "Can I return or exchange an order?", answer: "The demo currently mentions a 30-day return window. A real store should publish its final eligibility, timelines, and exchange process before taking customer orders." },
   { question: "Can I buy something on this website?", answer: "This website is a static preview. Product cards, cart, wishlist, newsletter, and forms do not take orders or process payments." },
 ];

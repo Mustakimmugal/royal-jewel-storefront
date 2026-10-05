@@ -14,6 +14,8 @@ import Reveal from "../components/Reveal";
 import ProductCard from "../components/ProductCard";
 import SectionTitle from "../components/SectionTitle";
 import Newsletter from "../components/Newsletter";
+import { formatINR } from "../utils/currency";
+import { freeShippingThreshold } from "../data/storeSettings";
 
 const heroSlides = [
   {
@@ -89,7 +91,7 @@ export default function Home() {
       </section>
 
       <div className="trust-strip page-wrap">
-        <div className="trust-item"><span>✧</span><div><strong>Complimentary delivery</strong><small>On orders over $150</small></div></div>
+        <div className="trust-item"><span>✧</span><div><strong>Complimentary delivery</strong><small>{"On orders over " + formatINR(freeShippingThreshold)}</small></div></div>
         <div className="trust-item"><span>◇</span><div><strong>Made with care</strong><small>Quality in every detail</small></div></div>
         <div className="trust-item"><span>↺</span><div><strong>Easy returns</strong><small>30 days to decide</small></div></div>
         <div className="trust-item"><span>♡</span><div><strong>Gift-ready packaging</strong><small>A lovely arrival, every time</small></div></div>

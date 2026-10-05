@@ -5,6 +5,8 @@ import PageIntro from "../components/PageIntro";
 import ProductCard from "../components/ProductCard";
 import { products } from "../data/products";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { formatINR } from "../utils/currency";
+import { freeShippingThreshold, priceRange } from "../data/storeSettings";
 
 const categoryOptions = ["Necklaces", "Earrings", "Rings", "Bracelets", "Wedding"];
 
@@ -13,7 +15,7 @@ export default function Shop() {
   const initialCategory = searchParams.get("category") || "All";
   const [category, setCategory] = useState(initialCategory);
   const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [maxPrice, setMaxPrice] = useState(300);
+  const [maxPrice, setMaxPrice] = useState(priceRange.max);
   const [sort, setSort] = useState(searchParams.get("sort") === "new" ? "new" : "featured");
   usePageMeta("Shop the Collection", "Explore necklaces, earrings, rings, bracelets, and wedding jewellery from Royal Jewel.");
 
@@ -57,12 +59,12 @@ export default function Shop() {
               </div>
               <div className="filter-group">
                 <h4>Price range</h4>
-                <input className="price-range" type="range" min="80" max="300" step="10" value={maxPrice} onChange={(event) => setMaxPrice(Number(event.target.value))} aria-label="Maximum price" />
-                <div className="range-values"><span>$80</span><span>{"Up to $" + maxPrice}</span></div>
+                <input className="price-range" type="range" min={priceRange.min} max={priceRange.max} step={priceRange.step} value={maxPrice} onChange={(event) => setMaxPrice(Number(event.target.value))} aria-label="Maximum price" />
+                <div className="range-values"><span>{formatINR(priceRange.min)}</span><span>{"Up to " + formatINR(maxPrice)}</span></div>
               </div>
               <div className="filter-group">
                 <h4>Good to know</h4>
-                <p className="m-0 text-[9px] leading-6 text-stone">Complimentary delivery on orders over $150. Each piece arrives in a keepsake box.</p>
+                <p className="filter-note">Complimentary delivery on orders over {formatINR(freeShippingThreshold)}. Each piece arrives in a keepsake box.</p>
               </div>
             </aside>
             <div className="shop-content">
@@ -81,7 +83,7 @@ export default function Shop() {
               </div>
               <div className="shop-grid">
                 {visibleProducts.length ? visibleProducts.map((product, index) => <ProductCard key={product.id} product={product} index={index} />) : (
-                  <div className="no-results"><h3>Nothing found, just yet.</h3><p>Try another search or widen your filters.</p><button className="text-link" type="button" onClick={() => { setSearch(""); setMaxPrice(300); changeCategory("All"); }}>Clear filters</button></div>
+                  <div className="no-results"><h3>Nothing found, just yet.</h3><p>Try another search or widen your filters.</p><button className="text-link" type="button" onClick={() => { setSearch(""); setMaxPrice(priceRange.max); changeCategory("All"); }}>Clear filters</button></div>
                 )}
               </div>
             </div>
