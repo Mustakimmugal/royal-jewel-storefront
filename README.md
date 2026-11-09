@@ -1,71 +1,36 @@
-# Royal Jewel — React storefront
+# Royal Jewellers
 
-A premium, responsive, static jewellery storefront built with React, Vite, Tailwind CSS v4, React Router, Framer Motion, React Icons, and Swiper.
-
-## Run locally on Windows
-
-1. Open Command Prompt (CMD).
-2. Change to this project folder:
-
-   ~~~cmd
-   cd /d "C:\Users\Mustakim\Documents\Codex\2026-10-04\hi-x20\outputs\royal-jewel-storefront"
-   ~~~
-
-3. Install the listed frontend packages:
-
-   ~~~cmd
-   npm install
-   ~~~
-
-4. Start the preview:
-
-   ~~~cmd
-   npm run dev
-   ~~~
-
-5. Open the local address Vite prints in the terminal, usually http://localhost:5173.
-
-For a production bundle, run npm run build. Vite writes the static deployable files to dist/. The included public/_redirects file enables React Router deep links on hosts that support Netlify-style redirects.
-
-## Pages
-
-- Home, Shop, static Product Details, Cart, Wishlist, About Us, Contact, Gallery, FAQ, Privacy Policy, and Terms & Conditions
-- Search, category and price filters, and sort controls on the Shop page
-- Responsive navigation, image galleries, customer quote slider, featured product slider, and Instagram-style gallery
-- Cart quantity, removal, subtotal, and wishlist save/remove work in the browser and persist in local storage
-- Checkout, newsletter, and contact forms are demos; they do not create orders or transmit form submissions
-
-## Project structure
+A full-stack jewellery store organized as a small monorepo:
 
 ~~~text
-src/
-  assets/       asset notes
-  components/   reusable navigation, cards, sections, and animation
-  data/         local static product, category, testimonial, and gallery data
-  hooks/        page metadata and demo toast context
-  layouts/      shared page shell
-  pages/        individual routes
-  App.jsx
-  index.css
-  main.jsx
+royal-jewellers/
+  frontend/    React + Vite storefront
+  backend/     Express API + MongoDB models
+  docs/        Product and system plans
 ~~~
 
-## Customize
+## Start locally
 
-- Edit product content and image URLs in src/data/products.js.
-- Update brand copy, colors, and responsive styles in src/index.css.
-- Change navigation/footer links in src/components/.
-- Replace the sample contact details, policy text, prices, and delivery terms before publishing a real shop.
+Run these from this folder in two PowerShell windows.
 
-## Image sources
+Frontend:
 
-Jewellery and editorial photos are remote Pexels placeholders. Google Fonts are also loaded remotely. Keep an internet connection for those visuals, and replace assets with properly licensed store photography before a commercial launch.
+~~~powershell
+npm install --prefix frontend
+npm run dev:frontend
+~~~
 
-- https://www.pexels.com/photo/model-posing-in-necklace-19647000/
-- https://www.pexels.com/photo/elegant-gold-necklace-on-display-in-jewelry-store-29013500/
-- https://www.pexels.com/photo/elegant-gold-jhumka-earring-on-woman-s-ear-37601639/
-- https://www.pexels.com/photo/golden-ring-on-white-background-10581426/
-- https://www.pexels.com/photo/photo-of-a-gold-bracelet-12124621/
-- https://www.pexels.com/photo/close-up-shot-of-gold-earrings-12194363/
-- https://www.pexels.com/photo/gold-necklace-with-a-pendant-12217206/
-- https://www.pexels.com/photo/display-of-jewelry-20858959/
+Backend:
+
+~~~powershell
+npm install --prefix backend
+Copy-Item backend/.env.example backend/.env
+~~~
+
+Put the MongoDB connection URL in backend/.env as MONGODB_URI. Use the database royal_jawellars. Then start the backend:
+
+~~~powershell
+npm run dev:backend
+~~~
+
+The storefront is usually at http://localhost:5173 and the API health endpoint at http://localhost:4000/api/health. Customers register and sign in with email and password, can browse without signing in, and need an account to place an order. Password recovery uses an emailed reset link and two recovery answers. Admin access is assigned by changing the user's role in MongoDB. The admin can manage products, orders, and contact messages. Contact notes and newsletter subscriptions are saved in MongoDB. See frontend/README.md and backend/README.md for local setup. The project plan is in docs/PROJECT_PLAN.md.
