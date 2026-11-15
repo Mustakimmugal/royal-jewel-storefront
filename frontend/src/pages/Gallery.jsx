@@ -8,10 +8,10 @@ import PageIntro from "../components/PageIntro";
 const captions = ["The golden hour", "Little things, kept close", "A detail to remember", "A thoughtful gift", "The everyday edit", "A moment of light"];
 
 export default function Gallery() {
-  usePageMeta("The Gallery", "Explore the Royal Jewellers visual collection and jewellery inspiration.");
+  usePageMeta("The Gallery", "Explore the MH JEWELLERS visual collection and jewellery inspiration.");
   return (
     <>
-      <PageIntro eyebrow="THE ROYAL JEWELLERS JOURNAL" title="A little inspiration." copy="Luminous details, thoughtful layers, and all the ways to make a piece your own." image="https://images.pexels.com/photos/20858959/pexels-photo-20858959.jpeg?auto=compress&cs=tinysrgb&w=1750" />
+      <PageIntro eyebrow="THE MH JEWELLERS JOURNAL" title="A little inspiration." copy="Luminous details, thoughtful layers, and all the ways to make a piece your own." image="https://images.pexels.com/photos/20858959/pexels-photo-20858959.jpeg?auto=compress&cs=tinysrgb&w=1750" />
       <section className="section page-wrap">
         <div className="gallery-masonry">
           {galleryImages.map((image, index) => (

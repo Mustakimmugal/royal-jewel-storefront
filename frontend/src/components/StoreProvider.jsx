@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { products as sampleProducts } from "../data/products";
 import { api } from "../api/client";
 import { StoreContext } from "../hooks/useStore";
 import { useAuth } from "../hooks/useAuth";
@@ -60,7 +59,8 @@ function toStoreProduct(product) {
 
 export default function StoreProvider({ children }) {
   const { user, accessToken, ready: authReady } = useAuth();
-  const [products, setProducts] = useState(sampleProducts);
+  const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [syncedUser, setSyncedUser] = useState("");
@@ -74,10 +74,13 @@ export default function StoreProvider({ children }) {
     let active = true;
     api.products()
       .then(({ products: remoteProducts }) => {
-        if (active && remoteProducts.length) setProducts(remoteProducts.map(toStoreProduct));
+        if (active) setProducts(remoteProducts.map(toStoreProduct));
       })
       .catch(() => {
-        // Keep the sample catalog visible while the API or MongoDB is unavailable.
+        if (active) setProducts([]);
+      })
+      .finally(() => {
+        if (active) setProductsLoading(false);
       });
     return () => { active = false; };
   }, []);
@@ -184,6 +187,7 @@ export default function StoreProvider({ children }) {
   return (
     <StoreContext.Provider value={{
       products,
+      productsLoading,
       cart: visibleCart,
       wishlist: visibleWishlist,
       cartCount,

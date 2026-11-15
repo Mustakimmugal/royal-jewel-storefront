@@ -300,7 +300,7 @@ export default function AdminDashboard() {
   if (!ready) return <main className="admin-loading">Checking admin access…</main>;
   if (!user) return <Navigate to="/login?next=/admin" replace />;
   if (!["admin", "employee"].includes(user.role)) {
-    return <main className="admin-loading"><h1>Admin access required</h1><p>This account does not have dashboard access.</p><Link to="/">Return to Royal Jewellers</Link></main>;
+    return <main className="admin-loading"><h1>Admin access required</h1><p>This account does not have dashboard access.</p><Link to="/">Return to MH JEWELLERS</Link></main>;
   }
 
   const stats = dashboard?.stats || {};
@@ -312,7 +312,7 @@ export default function AdminDashboard() {
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
-        <Link to="/" className="admin-brand"><span>R</span><strong>ROYAL JEWELLERS<small>STORE ADMIN</small></strong></Link>
+        <Link to="/" className="admin-brand"><span>MH</span><strong>MH JEWELLERS<small>STORE ADMIN</small></strong></Link>
         <nav aria-label="Admin navigation">
           <button className={section === "overview" ? "active" : ""} onClick={() => setSection("overview")}><FiClipboard /> Overview</button>
           <button className={section === "products" ? "active" : ""} onClick={() => setSection("products")}><FiBox /> Products</button>
@@ -328,7 +328,7 @@ export default function AdminDashboard() {
 
       <main className="admin-main">
         <header className="admin-topbar">
-          <div><p className="eyebrow">ROYAL JEWELLERS ADMIN</p><h1>{section === "overview" ? "Store overview" : section === "products" ? "Products" : section === "add-product" ? editingProduct ? "Edit product" : "Add a product" : section === "orders" ? "Orders" : section === "returns" ? "Return requests" : section === "customers" ? "Customers" : section === "coupons" ? "Coupons" : "Messages"}</h1></div>
+          <div><p className="eyebrow">MH JEWELLERS ADMIN</p><h1>{section === "overview" ? "Store overview" : section === "products" ? "Products" : section === "add-product" ? editingProduct ? "Edit product" : "Add a product" : section === "orders" ? "Orders" : section === "returns" ? "Return requests" : section === "customers" ? "Customers" : section === "coupons" ? "Coupons" : "Messages"}</h1></div>
           <div className="admin-topbar-actions">
             <Link className="admin-back-link" to="/"><FiArrowLeft /> Back to store</Link>
             <button className="admin-refresh" onClick={() => Promise.all([loadProducts(), loadOrders(), loadMessages(), loadDashboard(), loadCustomers(), ...(user.role === "admin" ? [loadCoupons()] : [])]).catch((loadError) => setError(loadError.message))}><FiRefreshCw /> Refresh</button>

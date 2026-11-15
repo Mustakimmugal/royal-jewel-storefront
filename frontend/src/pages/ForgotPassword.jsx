@@ -16,7 +16,7 @@ export default function ForgotPassword() {
   const [emailLinkSent, setEmailLinkSent] = useState(false);
   const [fallbackVisible, setFallbackVisible] = useState(false);
   const [error, setError] = useState("");
-  usePageMeta("Forgot password", "Recover your Royal Jewellers account password.");
+  usePageMeta("Forgot password", "Recover your MH JEWELLERS account password.");
 
   async function findRecoveryQuestions(event) {
     event.preventDefault();

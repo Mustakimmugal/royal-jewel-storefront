@@ -1,8 +1,8 @@
-# Royal Jewellers — project blueprint
+# MH JEWELLERS — project blueprint
 
 ## Confirmed product decisions
 
-- Brand name: **Royal Jewellers**.
+- Brand name: **MH JEWELLERS**.
 - Visitors can browse products without an account.
 - Customers use email and password. Passwords and recovery answers are stored as one-way hashes; JWTs are used only for authenticated sessions.
 - Password recovery uses a single-use email link plus two saved recovery answers. Admin role is assigned directly to the user record in MongoDB.
@@ -86,7 +86,7 @@ Use least-privilege roles, for example Owner, Catalog Manager, Order Manager, In
 
 ## Implementation progress
 
-- Applied the confirmed Royal Jewellers name and working design tokens to the existing storefront.
+- Applied the confirmed MH JEWELLERS name and working design tokens to the existing storefront.
 - Added the TypeScript entry point, strict TypeScript configuration, and typed API client. Existing React screens remain JavaScript for an incremental migration.
 - Added Express/Mongoose user, product, password-reset, refresh-session, and order models with API routes for products, email/password authentication, and COD orders.
 - Connected storefront catalog pages to API results with the current sample catalog as an offline fallback.

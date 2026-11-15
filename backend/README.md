@@ -1,4 +1,4 @@
-# Royal Jewellers backend
+# MH JEWELLERS backend
 
 This folder contains the Node.js/Express API and MongoDB models. The React/Vite frontend is in the sibling folder frontend.
 

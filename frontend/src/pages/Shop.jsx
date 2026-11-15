@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import PageIntro from "../components/PageIntro";
 import ProductCard from "../components/ProductCard";
+import ProductSkeleton from "../components/ProductSkeleton";
 import { useStore } from "../hooks/useStore";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { formatINR } from "../utils/currency";
@@ -12,13 +13,13 @@ const categoryOptions = ["Necklaces", "Earrings", "Rings", "Bracelets", "Wedding
 
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { products } = useStore();
+  const { products, productsLoading } = useStore();
   const initialCategory = searchParams.get("category") || "All";
   const [category, setCategory] = useState(initialCategory);
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [maxPrice, setMaxPrice] = useState(priceRange.max);
   const [sort, setSort] = useState(searchParams.get("sort") === "new" ? "new" : "featured");
-  usePageMeta("Shop the Collection", "Explore necklaces, earrings, rings, bracelets, and wedding jewellery from Royal Jewellers.");
+  usePageMeta("Shop the Collection", "Explore necklaces, earrings, rings, bracelets, and wedding jewellery from MH JEWELLERS.");
 
   const visibleProducts = useMemo(() => {
     const result = products.filter((product) =>
@@ -83,7 +84,7 @@ export default function Shop() {
                 </label>
               </div>
               <div className="shop-grid">
-                {visibleProducts.length ? visibleProducts.map((product, index) => <ProductCard key={product.id} product={product} index={index} />) : (
+                {productsLoading ? Array.from({ length: 8 }, (_, index) => <ProductSkeleton key={index} />) : visibleProducts.length ? visibleProducts.map((product, index) => <ProductCard key={product.id} product={product} index={index} />) : (
                   <div className="no-results"><h3>Nothing found, just yet.</h3><p>Try another search or widen your filters.</p><button className="text-link" type="button" onClick={() => { setSearch(""); setMaxPrice(priceRange.max); changeCategory("All"); }}>Clear filters</button></div>
                 )}
               </div>

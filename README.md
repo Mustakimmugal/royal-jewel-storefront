@@ -1,4 +1,4 @@
-# Royal Jewellers
+# MH JEWELLERS
 
 A full-stack jewellery store organized as a small monorepo:
 

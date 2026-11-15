@@ -19,7 +19,7 @@ export default function Login() {
   const { signIn, user, ready } = useAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  usePageMeta("Sign in", "Sign in to your Royal Jewellers account with email and password.");
+  usePageMeta("Sign in", "Sign in to your MH JEWELLERS account with email and password.");
 
   useEffect(() => {
     if (!ready || !user) return;
@@ -43,7 +43,7 @@ export default function Login() {
 
   return (
     <>
-      <PageIntro eyebrow="YOUR ROYAL JEWELLERS ACCOUNT" title="A little closer." copy="Sign in to place orders and manage your account. You can browse the collection without signing in." />
+      <PageIntro eyebrow="YOUR MH JEWELLERS ACCOUNT" title="A little closer." copy="Sign in to place orders and manage your account. You can browse the collection without signing in." />
       <section className="section page-wrap auth-page">
         <div className="auth-panel">
           <p className="eyebrow">EMAIL AND PASSWORD</p>
@@ -57,7 +57,7 @@ export default function Login() {
             <button className="button button-dark" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in"} <FiArrowRight /></button>
           </form>
           <p className="auth-copy"><Link to="/forgot-password">Forgot password?</Link></p>
-          <p className="auth-copy">New to Royal Jewellers? <Link to="/register">Create an account</Link></p>
+          <p className="auth-copy">New to MH JEWELLERS? <Link to="/register">Create an account</Link></p>
           <p className="auth-footnote">You can shop without signing in. An account is required to place an order.</p>
           <Link className="auth-shop-link" to="/shop">Continue browsing <FiArrowUpRight /></Link>
         </div>

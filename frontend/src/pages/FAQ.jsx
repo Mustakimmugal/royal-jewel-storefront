@@ -18,7 +18,7 @@ const questions = [
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
-  usePageMeta("Frequently Asked Questions", "Answers to common Royal Jewellers questions about materials, care, shipping, and returns.");
+  usePageMeta("Frequently Asked Questions", "Answers to common MH JEWELLERS questions about materials, care, shipping, and returns.");
   return (
     <>
       <PageIntro eyebrow="HERE TO HELP" title="A few helpful answers." copy="A little clarity goes a long way. Find some useful notes about the collection and the experience." />

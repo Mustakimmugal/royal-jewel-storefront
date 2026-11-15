@@ -13,6 +13,7 @@ import { useStore } from "../hooks/useStore";
 import { usePageMeta } from "../hooks/usePageMeta";
 import Reveal from "../components/Reveal";
 import ProductCard from "../components/ProductCard";
+import ProductSkeleton from "../components/ProductSkeleton";
 import SectionTitle from "../components/SectionTitle";
 import Newsletter from "../components/Newsletter";
 import { formatINR } from "../utils/currency";
@@ -49,8 +50,8 @@ export default function Home() {
   const featureSwiperRef = useRef(null);
   const heroSwiperRef = useRef(null);
   const testimonialSwiperRef = useRef(null);
-  const { products } = useStore();
-  usePageMeta("Fine Jewellery for Every Chapter", "Meet Royal Jewellers: thoughtful gold jewellery for all of life's little moments.");
+  const { products, productsLoading } = useStore();
+  usePageMeta("Fine Jewellery for Every Chapter", "Meet MH JEWELLERS: thoughtful gold jewellery for all of life's little moments.");
   const featured = products.filter((product) => product.featured);
   const arrivals = products.filter((product) => product.isNew);
   const bestsellers = products.filter((product) => product.badge === "Bestseller");
@@ -131,7 +132,7 @@ export default function Home() {
             spaceBetween={12}
             breakpoints={{ 580: { slidesPerView: 2.2, spaceBetween: 15 }, 900: { slidesPerView: 3.2, spaceBetween: 18 }, 1200: { slidesPerView: 4, spaceBetween: 20 } }}
           >
-            {featured.map((product, index) => <SwiperSlide key={product.id}><ProductCard product={product} index={index} /></SwiperSlide>)}
+            {productsLoading ? Array.from({ length: 4 }, (_, index) => <SwiperSlide key={index}><ProductSkeleton /></SwiperSlide>) : featured.map((product, index) => <SwiperSlide key={product.id}><ProductCard product={product} index={index} /></SwiperSlide>)}
           </Swiper>
           <div className="mt-8 text-center"><Link className="button button-dark" to="/shop">Discover all pieces <FiArrowRight /></Link></div>
         </div>
@@ -145,7 +146,7 @@ export default function Home() {
           </div>
         </Reveal>
         <div className="shop-grid">
-          {arrivals.slice(0, 4).map((product, index) => <ProductCard key={product.id} product={product} index={index} />)}
+          {productsLoading ? Array.from({ length: 4 }, (_, index) => <ProductSkeleton key={index} />) : arrivals.slice(0, 4).map((product, index) => <ProductCard key={product.id} product={product} index={index} />)}
         </div>
       </section>
 
@@ -167,12 +168,12 @@ export default function Home() {
           </div>
         </Reveal>
         <div className="shop-grid">
-          {bestsellers.concat(products.filter((item) => item.featured && item.badge !== "Bestseller")).slice(0, 4).map((product, index) => <ProductCard key={product.id} product={product} index={index} />)}
+          {productsLoading ? Array.from({ length: 4 }, (_, index) => <ProductSkeleton key={index} />) : bestsellers.concat(products.filter((item) => item.featured && item.badge !== "Bestseller")).slice(0, 4).map((product, index) => <ProductCard key={product.id} product={product} index={index} />)}
         </div>
       </section>
 
       <section className="section-tight page-wrap">
-        <Reveal><SectionTitle eyebrow="THE ROYAL JEWELLERS PROMISE" title="Little reasons to love it here." copy="The thoughtful details matter, from the first click to the last clasp." centered /></Reveal>
+        <Reveal><SectionTitle eyebrow="THE MH JEWELLERS PROMISE" title="Little reasons to love it here." copy="The thoughtful details matter, from the first click to the last clasp." centered /></Reveal>
         <div className="benefit-grid">
           {benefits.map((benefit, index) => (
             <Reveal key={benefit.title} delay={index * 0.08}>
@@ -211,13 +212,13 @@ export default function Home() {
         <Reveal>
           <div className="split-heading">
             <SectionTitle eyebrow="A LITTLE INSPIRATION" title="Life, lately." copy="See how our community wears the little things they love." />
-            <a className="text-link" href="https://www.instagram.com/" target="_blank" rel="noreferrer"><FaInstagram /> @royaljewel <FiArrowUpRight /></a>
+            <Link className="text-link" to="/gallery">View gallery <FiArrowUpRight /></Link>
           </div>
         </Reveal>
         <div className="instagram-grid">
           {galleryImages.map((image, index) => (
             <Link className="instagram-tile" to="/gallery" key={image} aria-label={"View image " + (index + 1) + " in the gallery"}>
-              <img src={image} alt="Royal Jewellers editorial jewellery" loading="lazy" /><span><FaInstagram /></span>
+              <img src={image} alt="MH JEWELLERS editorial jewellery" loading="lazy" /><span><FaInstagram /></span>
             </Link>
           ))}
         </div>

@@ -2,7 +2,7 @@ import { usePageMeta } from "../hooks/usePageMeta";
 import PageIntro from "../components/PageIntro";
 
 export default function Terms() {
-  usePageMeta("Terms and Conditions", "Sample terms and conditions for the Royal Jewellers static storefront.");
+  usePageMeta("Terms and Conditions", "Sample terms and conditions for the MH JEWELLERS static storefront.");
   return (
     <>
       <PageIntro eyebrow="THE IMPORTANT DETAILS" title="Terms & conditions." copy="A starting point for this non-transactional website preview." />

@@ -17,7 +17,7 @@ router.post("/", subscribeLimiter, async (req, res, next) => {
       { $set: { status: "active", subscribedAt: new Date() }, $setOnInsert: { email } },
       { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true },
     );
-    return res.status(201).json({ message: "You are on the Royal Jewellers list." });
+    return res.status(201).json({ message: "You are on the MH JEWELLERS list." });
   } catch (error) {
     return next(error);
   }

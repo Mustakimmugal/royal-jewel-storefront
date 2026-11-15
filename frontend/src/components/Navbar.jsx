@@ -44,9 +44,9 @@ export default function Navbar() {
           <button className="mobile-menu-toggle" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <FiX /> : <FiMenu />}
           </button>
-          <Link className="brand" to="/" aria-label="Royal Jewellers home">
-            <span className="brand-symbol">R<span>✧</span></span>
-            <span className="brand-name">ROYAL JEWELLERS<small>FINE JEWELLERY</small></span>
+          <Link className="brand" to="/" aria-label="MH JEWELLERS home">
+            <span className="brand-symbol">MH<span>✧</span></span>
+            <span className="brand-name">MH JEWELLERS<small>FINE JEWELLERY</small></span>
           </Link>
           <nav className={menuOpen ? "main-nav is-open" : "main-nav"} aria-label="Main navigation">
             {navItems.map((item) => (

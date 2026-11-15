@@ -20,7 +20,7 @@ export default function Register() {
   const { registerAccount, user, ready } = useAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  usePageMeta("Create an account", "Create a Royal Jewellers account with an email and password.");
+  usePageMeta("Create an account", "Create a MH JEWELLERS account with an email and password.");
 
   useEffect(() => {
     if (ready && user) navigate(user.role === "customer" ? "/" : "/admin", { replace: true });
@@ -56,7 +56,7 @@ export default function Register() {
 
   return (
     <>
-      <PageIntro eyebrow="JOIN ROYAL JEWELLERS" title="A new beginning." copy="Create an account with your email and password. Browse freely and sign in when you are ready to order." />
+      <PageIntro eyebrow="JOIN MH JEWELLERS" title="A new beginning." copy="Create an account with your email and password. Browse freely and sign in when you are ready to order." />
       <section className="section page-wrap auth-page">
         <div className="auth-panel">
           <p className="eyebrow">CREATE YOUR ACCOUNT</p>

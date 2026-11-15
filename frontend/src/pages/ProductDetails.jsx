@@ -36,7 +36,7 @@ export default function ProductDetails() {
     if (!product?.id) return;
     api.productReviews(product.id).then(({ reviews: entries }) => setReviews(entries)).catch(() => {});
   }, [product?.id]);
-  usePageMeta(product ? product.name : "Piece not found", product?.description || "Explore the Royal Jewellers collection.");
+  usePageMeta(product ? product.name : "Piece not found", product?.description || "Explore the MH JEWELLERS collection.");
 
   if (!product) {
     return <section className="not-found"><div><p className="eyebrow">A LITTLE DETOUR</p><h1>Not found.</h1><p>This piece may have moved on to a new chapter.</p><Link className="button button-dark" to="/shop">Explore the collection <FiArrowUpRight /></Link></div></section>;

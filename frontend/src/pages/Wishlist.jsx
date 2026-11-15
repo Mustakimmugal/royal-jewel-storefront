@@ -9,7 +9,7 @@ import { usePageMeta } from "../hooks/usePageMeta";
 
 export default function Wishlist() {
   const { products, wishlist } = useStore();
-  usePageMeta("Your Wishlist", "See the jewellery pieces you have saved in your Royal Jewellers wishlist.");
+  usePageMeta("Your Wishlist", "See the jewellery pieces you have saved in your MH JEWELLERS wishlist.");
   const savedProducts = products.filter((product) => wishlist.includes(product.id));
 
   return (

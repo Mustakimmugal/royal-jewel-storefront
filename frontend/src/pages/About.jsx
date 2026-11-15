@@ -12,16 +12,16 @@ const values = [
 ];
 
 export default function About() {
-  usePageMeta("Our Story", "Read the story and values behind Royal Jewellerslers' thoughtful jewellery collection.");
+  usePageMeta("Our Story", "Read the story and values behind MH JEWELLERS' thoughtful jewellery collection.");
   return (
     <>
-      <PageIntro eyebrow="THE HEART OF ROYAL JEWELLERS" title="Made for the moments that become yours." copy="We believe the things we keep close should feel personal, thoughtful, and made to stay." image="https://images.pexels.com/photos/19647000/pexels-photo-19647000/free-photo-of-model-posing-in-necklace.jpeg?auto=compress&dpr=1&h=1300&w=2000" />
+      <PageIntro eyebrow="THE HEART OF MH JEWELLERS" title="Made for the moments that become yours." copy="We believe the things we keep close should feel personal, thoughtful, and made to stay." image="https://images.pexels.com/photos/19647000/pexels-photo-19647000/free-photo-of-model-posing-in-necklace.jpeg?auto=compress&dpr=1&h=1300&w=2000" />
       <section className="story-grid">
-        <Reveal><img src="https://images.pexels.com/photos/20858959/pexels-photo-20858959.jpeg?auto=compress&cs=tinysrgb&w=1250" alt="Royal Jewellers pieces arranged with care" loading="lazy" /></Reveal>
+        <Reveal><img src="https://images.pexels.com/photos/20858959/pexels-photo-20858959.jpeg?auto=compress&cs=tinysrgb&w=1250" alt="MH JEWELLERS pieces arranged with care" loading="lazy" /></Reveal>
         <Reveal className="story-text">
           <p className="eyebrow">A NOTE FROM US</p>
           <h2>A little more meaning, in the everyday.</h2>
-          <p>Royal Jewellers began with a simple thought: jewellery does not need to wait for a special occasion. It can be the small detail that helps you feel like yourself on a regular Tuesday, or the keepsake that takes you back to a day you never want to forget.</p>
+          <p>MH JEWELLERS began with a simple thought: jewellery does not need to wait for a special occasion. It can be the small detail that helps you feel like yourself on a regular Tuesday, or the keepsake that takes you back to a day you never want to forget.</p>
           <p>So we bring together expressive shapes, luminous finishes, and thoughtful touches in a collection designed to be lived in. Each piece is an invitation to celebrate your own story, just as it is.</p>
           <Link className="button button-dark" to="/shop">Meet the collection <FiArrowUpRight /></Link>
         </Reveal>

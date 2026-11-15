@@ -214,9 +214,9 @@ router.post("/password/forgot", recoveryLimiter, async (req, res, next) => {
       const resetUrl = config.clientOrigin.replace(/\/$/, "") + "/reset-password?email=" + encodeURIComponent(email) + "&token=" + encodeURIComponent(token);
       await sendAccountEmail({
         to: email,
-        subject: "Reset your Royal Jewellers password",
+        subject: "Reset your MH JEWELLERS password",
         text: "Use this one-time link within 30 minutes to reset your password: " + resetUrl,
-        html: `<p>Use this one-time link within 30 minutes to reset your Royal Jewellers password:</p><p><a href="${resetUrl}">Reset password</a></p>`,
+        html: `<p>Use this one-time link within 30 minutes to reset your MH JEWELLERS password:</p><p><a href="${resetUrl}">Reset password</a></p>`,
       });
     }
     return res.json({ message: "If an account matches that email, password recovery instructions have been sent." });

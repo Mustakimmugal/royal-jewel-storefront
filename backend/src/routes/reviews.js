@@ -27,7 +27,7 @@ router.post("/:slug/reviews", authenticate, async (req, res, next) => {
     const purchase = await Order.exists({ userId: req.auth.sub, fulfillmentStatus: "delivered", "items.productSlug": req.params.slug });
     const review = await ProductReview.findOneAndUpdate(
       { productSlug: req.params.slug, userId: req.auth.sub },
-      { $set: { rating, comment, userName: user?.displayName || "Royal Jewellers customer", isVerifiedPurchase: Boolean(purchase) } },
+      { $set: { rating, comment, userName: user?.displayName || "MH JEWELLERS customer", isVerifiedPurchase: Boolean(purchase) } },
       { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true },
     );
     const summary = await ProductReview.aggregate([

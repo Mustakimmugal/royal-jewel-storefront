@@ -23,7 +23,7 @@ export default function Checkout() {
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
   const selectedAddress = addresses.find((address) => address._id === selectedAddressId);
-  usePageMeta("Checkout", "Confirm your delivery details and place your Royal Jewellers order.");
+  usePageMeta("Checkout", "Confirm your delivery details and place your MH JEWELLERS order.");
   const items = cart.map((line) => ({ ...line, product: products.find((product) => product.id === line.productId) })).filter((line) => line.product);
   const shipping = cartSubtotal >= freeShippingThreshold ? 0 : standardShippingFee;
 
@@ -81,7 +81,7 @@ export default function Checkout() {
 
   return (
     <>
-      <PageIntro eyebrow="A THOUGHTFUL FINISH" title={order ? "Order received." : "Your delivery details."} copy={order ? "Thank you. We will keep you updated as your order progresses." : "Confirm where your Royal Jewellers pieces should be delivered."} />
+      <PageIntro eyebrow="A THOUGHTFUL FINISH" title={order ? "Order received." : "Your delivery details."} copy={order ? "Thank you. We will keep you updated as your order progresses." : "Confirm where your MH JEWELLERS pieces should be delivered."} />
       <section className="section page-wrap checkout-page">
         {order ? (
           <div className="checkout-success">

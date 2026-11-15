@@ -42,7 +42,7 @@ export default function Newsletter({ compact = false }) {
         />
         <button type="submit" aria-label="Join the newsletter" disabled={busy}><FiArrowUpRight /></button>
       </form>
-      <small className="newsletter-fineprint">By joining, you agree to receive occasional Royal Jewellers updates.</small>
+      <small className="newsletter-fineprint">By joining, you agree to receive occasional MH JEWELLERS updates.</small>
     </div>
   );
 }

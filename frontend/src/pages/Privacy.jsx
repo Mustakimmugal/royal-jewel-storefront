@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PageIntro from "../components/PageIntro";
 
 export default function Privacy() {
-  usePageMeta("Privacy Policy", "A sample privacy policy page for the Royal Jewellers static storefront.");
+  usePageMeta("Privacy Policy", "A sample privacy policy page for the MH JEWELLERS static storefront.");
   return (
     <>
       <PageIntro eyebrow="THE IMPORTANT DETAILS" title="Privacy policy." copy="A plain-language starting point for this static storefront preview." />

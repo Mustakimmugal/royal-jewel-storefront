@@ -9,8 +9,8 @@ export default function Footer() {
       <div className="footer-top page-wrap">
         <div className="footer-brand-block">
           <Link className="brand footer-brand" to="/">
-            <span className="brand-symbol">R<span>✧</span></span>
-            <span className="brand-name">ROYAL JEWELLERS<small>FINE JEWELLERY</small></span>
+            <span className="brand-symbol">MH<span>✧</span></span>
+            <span className="brand-name">MH JEWELLERS<small>FINE JEWELLERY</small></span>
           </Link>
           <p>Pieces to mark the everyday and the once-in-a-lifetime. Thoughtfully made, forever treasured.</p>
           <div className="social-links"><a href="https://www.instagram.com/" aria-label="Instagram"><FiInstagram /></a><a href="https://www.pinterest.com/" aria-label="Pinterest"><FaPinterestP /></a></div>
@@ -20,7 +20,7 @@ export default function Footer() {
         <div className="footer-link-column"><h3>Helpful links</h3><Link to="/cart">Shopping bag</Link><Link to="/wishlist">Wishlist</Link><Link to="/faq">Frequently asked questions</Link><Link to="/privacy">Privacy policy</Link><Link to="/terms">Terms &amp; conditions</Link><Link to="/contact">Care &amp; contact</Link></div>
         <div className="footer-news"><Newsletter compact /></div>
       </div>
-      <div className="footer-bottom page-wrap"><span>© 2026 Royal Jewellers. All rights reserved.</span><span>Made for the moments that matter <b>✧</b></span><a href="#top">Back to top <FiArrowUpRight /></a></div>
+      <div className="footer-bottom page-wrap"><span>© 2026 MH JEWELLERS. All rights reserved.</span><span>Made for the moments that matter <b>✧</b></span><a href="#top">Back to top <FiArrowUpRight /></a></div>
     </footer>
   );
 }

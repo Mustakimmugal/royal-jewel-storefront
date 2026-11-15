@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
+import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 import { api } from "../api/client";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { mapEmbedUrl, mapsUrl, storeAddress, storeEmail, whatsappUrl } from "../data/storeSettings";
 import PageIntro from "../components/PageIntro";
 
 export default function Contact() {
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
-  usePageMeta("Contact Us", "Get in touch with the Royal Jewellers team.");
+  usePageMeta("Contact Us", "Get in touch with the MH JEWELLERS team.");
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -41,11 +42,10 @@ export default function Contact() {
           <aside className="contact-info-card">
             <p className="eyebrow">A REAL PERSON, SOON</p>
             <h2>We are just a note away.</h2>
-            <p>For this storefront preview, the details below are placeholders. Replace them with your store's contact information before launch.</p>
-            <div className="contact-method"><FiMail /><div><strong>Email</strong><small>hello@royaljewel.example</small></div></div>
-            <div className="contact-method"><FiPhone /><div><strong>Phone</strong><small>+91 00000 00000</small></div></div>
-            <div className="contact-method"><FiClock /><div><strong>Hours</strong><small>Monday–Saturday, 10 am–6 pm</small></div></div>
-            <div className="contact-method"><FiMapPin /><div><strong>Studio</strong><small>Mumbai, India · By appointment</small></div></div>
+            <div className="contact-method"><FiMail /><div><strong>Email</strong><small><a href={"mailto:" + storeEmail}>{storeEmail}</a></small></div></div>
+            <div className="contact-method"><FiPhone /><div><strong>WhatsApp</strong><small><a href={whatsappUrl} target="_blank" rel="noreferrer">+91 91193 24328</a></small></div></div>
+            <div className="contact-method"><FiMapPin /><div><strong>Store address</strong><small><a href={mapsUrl} target="_blank" rel="noreferrer">{storeAddress}</a></small></div></div>
+            <iframe className="store-map" title="Map of Subhash Chowk, Sikar" src={mapEmbedUrl} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
           </aside>
           <form className="contact-form" onSubmit={handleSubmit}>
             <p className="eyebrow">SEND US A NOTE</p>
@@ -58,7 +58,6 @@ export default function Contact() {
             {sent && <p className="contact-result" role="status">Thank you. Your note has reached our team.</p>}
             {error && <p className="auth-error" role="alert">{error}</p>}
             <button className="button button-dark" type="submit" disabled={busy}>{busy ? "Sending…" : "Send your note"} <span>→</span></button>
-            <p className="detail-note">Your message is stored securely so our team can respond. Contact details shown here are sample placeholders.</p>
           </form>
         </div>
       </section>

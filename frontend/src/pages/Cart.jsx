@@ -11,7 +11,7 @@ import { freeShippingThreshold } from "../data/storeSettings";
 export default function Cart() {
   const { products, cart, cartCount, cartSubtotal, updateQuantity, removeFromCart } = useStore();
   const { user } = useAuth();
-  usePageMeta("Shopping Bag", "Review the jewellery pieces in your Royal Jewellers shopping bag.");
+  usePageMeta("Shopping Bag", "Review the jewellery pieces in your MH JEWELLERS shopping bag.");
   const items = cart.map((line) => ({ ...line, product: products.find((product) => product.id === line.productId) })).filter((line) => line.product);
   const remaining = Math.max(0, freeShippingThreshold - cartSubtotal);
   const progress = Math.min(100, (cartSubtotal / freeShippingThreshold) * 100);

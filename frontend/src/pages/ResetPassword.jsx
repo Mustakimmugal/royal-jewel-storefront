@@ -24,7 +24,7 @@ export default function ResetPassword() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
-  usePageMeta("Reset password", "Set a new password for your Royal Jewellers account.");
+  usePageMeta("Reset password", "Set a new password for your MH JEWELLERS account.");
 
   useEffect(() => {
     let active = true;

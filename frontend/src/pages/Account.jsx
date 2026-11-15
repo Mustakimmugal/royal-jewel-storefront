@@ -17,7 +17,7 @@ export default function Account() {
   const [returnOrder, setReturnOrder] = useState(null);
   const [returnReason, setReturnReason] = useState("");
   const [profileImage, setProfileImage] = useState(user?.profileImage || "");
-  usePageMeta("My Account", "View your Royal Jewellers profile and order history.");
+  usePageMeta("My Account", "View your MH JEWELLERS profile and order history.");
 
   useEffect(() => {
     if (!accessToken) return;
@@ -86,7 +86,7 @@ export default function Account() {
 
   return (
     <>
-      <PageIntro eyebrow="YOUR ROYAL JEWELLERS ACCOUNT" title="Welcome back." copy="Your verified mobile number and recent orders, together in one place." />
+      <PageIntro eyebrow="YOUR MH JEWELLERS ACCOUNT" title="Welcome back." copy="Your verified mobile number and recent orders, together in one place." />
       <section className="section page-wrap account-page">
         <div className="account-heading">
           <div className="account-identity"><label className="account-profile-photo" title="Change profile photo"><input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={uploadProfileImage} disabled={workingProfile} />{profileImage ? <img src={profileImage} alt="Profile" /> : <span>R</span>}</label><div><p className="eyebrow">ACCOUNT DETAILS</p><h2>{user.displayName || "Your account"}</h2><p>{user.phone || user.email}</p><small>{workingProfile ? "Updating photo…" : profileImage ? "Click your photo to change it" : "Click to add a profile photo"}</small>{profileImage && <button className="admin-text-button" type="button" onClick={removeProfileImage} disabled={workingProfile}>Remove photo</button>}</div></div>

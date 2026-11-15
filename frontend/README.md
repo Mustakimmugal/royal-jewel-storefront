@@ -1,4 +1,4 @@
-# Royal Jewellers frontend
+# MH JEWELLERS frontend
 
 This folder contains the React/Vite storefront. The backend lives in the sibling folder backend.
 

@@ -28,7 +28,7 @@ export const config = {
   refreshTokenDays: Number(process.env.REFRESH_TOKEN_DAYS || 30),
   emailMode: process.env.EMAIL_MODE || (nodeEnv === "production" ? "disabled" : "console"),
   resendApiKey: process.env.RESEND_API_KEY || "",
-  emailFrom: process.env.EMAIL_FROM || "Royal Jewellers <onboarding@resend.dev>",
+  emailFrom: process.env.EMAIL_FROM || "MH JEWELLERS <onboarding@resend.dev>",
   cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY || "",
   cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET || "",
