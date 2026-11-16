@@ -45,7 +45,7 @@ export default function Navbar() {
             {menuOpen ? <FiX /> : <FiMenu />}
           </button>
           <Link className="brand" to="/" aria-label="MH JEWELLERS home">
-            <span className="brand-symbol"><img src="/public/mh-jewellers-logo-web-640w.png" alt="MH JEWELLERS" /><span>✧</span></span>
+            <span className="brand-symbol">MH<span>✧</span></span>
             <span className="brand-name">MH JEWELLERS<small>FINE JEWELLERY</small></span>
           </Link>
           <nav className={menuOpen ? "main-nav is-open" : "main-nav"} aria-label="Main navigation">
