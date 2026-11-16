@@ -34,9 +34,15 @@ const orderSchema = new mongoose.Schema({
   discount: { type: Number, default: 0, min: 0 },
   coupon: { code: { type: String, default: "" }, discountAmount: { type: Number, default: 0, min: 0 } },
   total: { type: Number, required: true, min: 0 },
-  paymentMethod: { type: String, enum: ["COD"], default: "COD" },
-  paymentStatus: { type: String, enum: ["pending", "paid", "failed", "refunded"], default: "pending" },
+  paymentMethod: { type: String, enum: ["COD", "online", "offline"], default: "COD" },
+  paymentStatus: { type: String, enum: ["pending", "processing", "paid", "failed", "refunded"], default: "pending" },
   fulfillmentStatus: { type: String, enum: ["pending", "processing", "packed", "shipped", "delivered", "cancelled", "refund"], default: "pending", index: true },
+  trackingHistory: [{
+    _id: false,
+    status: { type: String, required: true },
+    location: { type: String, trim: true, maxlength: 120 },
+    at: { type: Date, default: Date.now },
+  }],
   returnRequest: {
     isRequested: { type: Boolean, default: false },
     reason: { type: String, default: "", maxlength: 1000 },

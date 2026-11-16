@@ -38,7 +38,8 @@ export default function Register() {
     setError("");
     try {
       const signedInUser = await registerAccount({
-        email: String(values.email),
+        phone: String(values.phone),
+        email: String(values.email || ""),
         displayName: String(values.displayName),
         password: String(values.password),
         recoveryAnswers: [
@@ -56,7 +57,7 @@ export default function Register() {
 
   return (
     <>
-      <PageIntro eyebrow="JOIN MH JEWELLERS" title="A new beginning." copy="Create an account with your email and password. Browse freely and sign in when you are ready to order." />
+      <PageIntro eyebrow="JOIN MH JEWELLERS" title="A new beginning." copy="Register with a phone number and password. Add an email if you like. Browse freely and sign in when you are ready to order." />
       <section className="section page-wrap auth-page">
         <div className="auth-panel">
           <p className="eyebrow">CREATE YOUR ACCOUNT</p>
@@ -65,8 +66,10 @@ export default function Register() {
           <form className="auth-form" onSubmit={handleSubmit}>
             <label htmlFor="register-name">Full name</label>
             <input id="register-name" name="displayName" autoComplete="name" minLength={2} maxLength={100} placeholder="Your name" required />
-            <label htmlFor="register-email">Email address</label>
-            <input id="register-email" name="email" type="email" autoComplete="email" maxLength={254} placeholder="you@example.com" required />
+            <label htmlFor="register-phone">Phone number</label>
+            <input id="register-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" minLength={7} maxLength={24} placeholder="+91 98765 43210" required />
+            <label htmlFor="register-email">Email address (optional)</label>
+            <input id="register-email" name="email" type="email" autoComplete="email" maxLength={254} placeholder="you@example.com" />
             <label htmlFor="register-password">Password</label>
             <PasswordField id="register-password" autoComplete="new-password" minLength={6} />
             <label htmlFor="register-confirm-password">Confirm password</label>

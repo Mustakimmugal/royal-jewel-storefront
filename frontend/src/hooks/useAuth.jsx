@@ -32,8 +32,8 @@ export function AuthProvider({ children }) {
     return session.user;
   }
 
-  async function signIn(email, password) {
-    const session = await api.login(email, password);
+  async function signIn(identifier, password) {
+    const session = await api.login(identifier, password);
     setUser(session.user);
     setAccessToken(session.accessToken);
     return session.user;

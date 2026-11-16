@@ -1,6 +1,7 @@
+import { Badge, paymentMethods, paymentStates, statusLabels } from "../components/OrderStatus";
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { FiAlertTriangle, FiArchive, FiArrowLeft, FiArrowRight, FiBox, FiChevronRight, FiClipboard, FiImage, FiLoader, FiLogOut, FiMail, FiPackage, FiRefreshCw, FiRotateCcw, FiTag, FiUsers } from "react-icons/fi";
+import { FiAlertTriangle, FiArchive, FiLayers, FiPlus, FiTrash2, FiArrowLeft, FiArrowRight, FiBox, FiChevronRight, FiClipboard, FiImage, FiLoader, FiLogOut, FiMail, FiPackage, FiRefreshCw, FiRotateCcw, FiTag, FiUsers } from "react-icons/fi";
 import { api } from "../api/client";
 import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../hooks/useToast";
@@ -10,21 +11,12 @@ const statusTransitions = {
   pending: ["processing", "cancelled"],
   processing: ["packed", "shipped", "cancelled"],
   packed: ["shipped", "cancelled"],
-  shipped: ["delivered", "cancelled"],
-  delivered: ["refund"],
+  shipped: ["delivered"],
+  delivered: ["pending", "processing", "packed", "shipped", "refund"],
   cancelled: [],
   refund: [],
 };
 
-const statusLabels = {
-  pending: "Pending",
-  processing: "Processing",
-  packed: "Packed",
-  shipped: "Shipped / On the way",
-  delivered: "Delivered / Complete",
-  cancelled: "Cancelled",
-  refund: "Refunded",
-};
 
 function emptyImageSlots() {
   return [null, null, null, null];
@@ -63,6 +55,8 @@ export default function AdminDashboard() {
   const [dashboard, setDashboard] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [coupons, setCoupons] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [categoryName, setCategoryName] = useState("");
   const [editingProduct, setEditingProduct] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [imageSlots, setImageSlots] = useState(emptyImageSlots);
@@ -96,6 +90,11 @@ export default function AdminDashboard() {
     setCustomers(result.customers);
   }
 
+  async function loadCategories() {
+    const result = await api.categories();
+    setCategories(result.categories);
+  }
+
   async function loadCoupons() {
     const result = await api.adminCoupons(accessToken);
     setCoupons(result.coupons);
@@ -103,7 +102,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!accessToken) return;
-    const tasks = [loadProducts(), loadOrders(), loadMessages(), loadDashboard(), loadCustomers()];
+    const tasks = [loadProducts(), loadCategories(), loadOrders(), loadMessages(), loadDashboard(), loadCustomers()];
     if (user?.role === "admin") tasks.push(loadCoupons());
     Promise.all(tasks).catch((loadError) => setError(loadError.message));
   }, [accessToken, user?.role]);
@@ -119,10 +118,10 @@ export default function AdminDashboard() {
     const payload = {
       name,
       slug,
-      sku: String(values.sku).trim().toUpperCase(),
+      sku: String(values.sku || ("MH-" + Date.now().toString(36))).trim().toUpperCase(),
       category: String(values.category),
       collection: String(values.collection || ""),
-      description: String(values.description).trim(),
+      description: String(values.description || name).trim(),
       price: Number(values.price),
       stock: Number(values.stock),
       currency: "INR",
@@ -131,6 +130,7 @@ export default function AdminDashboard() {
       sizes: String(values.sizes).split(",").map((size) => size.trim()).filter(Boolean),
       material: String(values.material || ""),
       featured: values.featured === "on",
+      badge: String(values.badge || ""),
       isNew: values.isNew === "on",
       isActive: true,
     };
@@ -208,16 +208,35 @@ export default function AdminDashboard() {
     }
   }
 
-  async function setPaymentStatus(orderId, paymentStatus) {
+  async function setPaymentStatus(orderId, changes) {
     setBusy(true);
     setError("");
     setMessage("");
     try {
-      await api.updatePaymentStatus(accessToken, orderId, paymentStatus);
-      await loadOrders();
+      const result = await api.updatePaymentStatus(accessToken, orderId, changes);
+      setOrders(current => current.map(order => order._id === orderId ? { ...order, ...result.order, userId: order.userId } : order));
       setMessage("Payment status updated.");
     } catch (statusError) {
       setError(statusError.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveLocation(event, order) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const location = form.elements.location.value.trim();
+    if (!location) return;
+    setBusy(true);
+    setError("");
+    try {
+      const result = await api.updateOrderLocation(accessToken, order._id, order.fulfillmentStatus, location);
+      setOrders(current => current.map(currentOrder => currentOrder._id === order._id ? { ...currentOrder, ...result.order, userId: currentOrder.userId } : currentOrder));
+      form.reset();
+      setMessage("Tracking location updated.");
+    } catch (error) {
+      setError(error.message);
     } finally {
       setBusy(false);
     }
@@ -228,8 +247,8 @@ export default function AdminDashboard() {
     setError("");
     setMessage("");
     try {
-      await api.updateOrderStatus(accessToken, orderId, status);
-      await loadOrders();
+      const result = await api.updateOrderStatus(accessToken, orderId, status);
+      setOrders(current => current.map(order => order._id === orderId ? { ...order, ...result.order, userId: order.userId } : order));
       setMessage("Order status updated.");
     } catch (statusError) {
       setError(statusError.message);
@@ -317,6 +336,7 @@ export default function AdminDashboard() {
           <button className={section === "overview" ? "active" : ""} onClick={() => setSection("overview")}><FiClipboard /> Overview</button>
           <button className={section === "products" ? "active" : ""} onClick={() => setSection("products")}><FiBox /> Products</button>
           <button className={section === "add-product" ? "active" : ""} onClick={() => { setEditingProduct(null); setImageSlots(emptyImageSlots()); setSection("add-product"); }}><FiPackage /> Add product</button>
+          <button className={section === "categories" ? "active" : ""} onClick={() => setSection("categories")}><FiLayers /> Categories</button>
           <button className={section === "orders" ? "active" : ""} onClick={() => setSection("orders")}><FiArchive /> Orders</button>
           <button className={section === "returns" ? "active" : ""} onClick={() => setSection("returns")}><FiRotateCcw /> Returns</button>
           <button className={section === "customers" ? "active" : ""} onClick={() => setSection("customers")}><FiUsers /> Customers</button>
@@ -328,10 +348,10 @@ export default function AdminDashboard() {
 
       <main className="admin-main">
         <header className="admin-topbar">
-          <div><p className="eyebrow">MH JEWELLERS ADMIN</p><h1>{section === "overview" ? "Store overview" : section === "products" ? "Products" : section === "add-product" ? editingProduct ? "Edit product" : "Add a product" : section === "orders" ? "Orders" : section === "returns" ? "Return requests" : section === "customers" ? "Customers" : section === "coupons" ? "Coupons" : "Messages"}</h1></div>
+          <div><p className="eyebrow">MH JEWELLERS ADMIN</p><h1>{section === "overview" ? "Store overview" : section === "products" ? "Products" : section === "add-product" ? editingProduct ? "Edit product" : "Add a product" : section === "categories" ? "Categories" : section === "orders" ? "Orders" : section === "returns" ? "Return requests" : section === "customers" ? "Customers" : section === "coupons" ? "Coupons" : "Messages"}</h1></div>
           <div className="admin-topbar-actions">
             <Link className="admin-back-link" to="/"><FiArrowLeft /> Back to store</Link>
-            <button className="admin-refresh" onClick={() => Promise.all([loadProducts(), loadOrders(), loadMessages(), loadDashboard(), loadCustomers(), ...(user.role === "admin" ? [loadCoupons()] : [])]).catch((loadError) => setError(loadError.message))}><FiRefreshCw /> Refresh</button>
+            <button className="admin-refresh" onClick={() => Promise.all([loadProducts(), loadCategories(), loadOrders(), loadMessages(), loadDashboard(), loadCustomers(), ...(user.role === "admin" ? [loadCoupons()] : [])]).catch((loadError) => setError(loadError.message))}><FiRefreshCw /> Refresh</button>
           </div>
         </header>
         <div className="admin-welcome">Signed in as <strong>{user.displayName || user.phone}</strong><FiChevronRight /> <span>{user.role}</span></div>
@@ -353,7 +373,7 @@ export default function AdminDashboard() {
             </div>
             <section className="admin-card">
               <div className="admin-card-heading"><div><p className="eyebrow">LATEST ACTIVITY</p><h2>Recent orders</h2></div><button onClick={() => setSection("orders")}>All orders <FiChevronRight /></button></div>
-              {(dashboard?.recentOrders || orders).length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead><tbody>{(dashboard?.recentOrders || orders).slice(0, 6).map((order) => <tr key={order._id}><td>{order.orderNumber}</td><td>{order.userId?.displayName || order.userId?.phone || order.userId?.email || "Customer"}</td><td>{formatINR(order.total)}</td><td>{order.paymentStatus}</td><td><span className="admin-status">{order.fulfillmentStatus}</span></td></tr>)}</tbody></table></div> : <p className="admin-empty">Orders will appear here after the first customer purchase.</p>}
+              {(dashboard?.recentOrders || orders).length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead><tbody>{(dashboard?.recentOrders || orders).slice(0, 6).map((order) => <tr key={order._id}><td>{order.orderNumber}</td><td>{order.userId?.displayName || order.userId?.phone || order.userId?.email || "Customer"}</td><td>{formatINR(order.total)}</td><td><Badge value={order.paymentStatus} labels={paymentStates} /></td><td><Badge value={order.fulfillmentStatus} /></td></tr>)}</tbody></table></div> : <p className="admin-empty">Orders will appear here after the first customer purchase.</p>}
             </section>
           </>
         )}
@@ -365,19 +385,29 @@ export default function AdminDashboard() {
           </section>
         )}
 
+        {section === "categories" && (
+          <section className="admin-card">
+            <div className="admin-card-heading"><div><p className="eyebrow">CATALOGUE</p><h2>Product categories</h2></div></div>
+            <form className="category-create-form" onSubmit={async (event) => { event.preventDefault(); setBusy(true); setError(""); try { await api.createCategory(accessToken, categoryName); setCategoryName(""); await loadCategories(); setMessage("Category added."); } catch (saveError) { setError(saveError.message); } finally { setBusy(false); } }}>
+              <label htmlFor="category-name">New category name</label><div><input id="category-name" value={categoryName} onChange={(event) => setCategoryName(event.target.value)} maxLength={80} required placeholder="For example, Pendant Sets" /><button className="button button-dark" disabled={busy}><FiPlus /> Add category</button></div>
+            </form>
+            {categories.length ? <div className="category-admin-list">{categories.map((category) => <article key={category._id}><span><FiLayers /><strong>{category.name}</strong></span><button type="button" className="admin-text-button admin-delete-button" disabled={busy} onClick={async () => { if (!window.confirm("Delete the category “" + category.name + "”?")) return; setBusy(true); setError(""); try { await api.deleteCategory(accessToken, category._id); await loadCategories(); setMessage("Category deleted."); } catch (removeError) { setError(removeError.message); } finally { setBusy(false); } }}><FiTrash2 /> Delete</button></article>)}</div> : <p className="admin-empty">No saved categories yet. Add a category above.</p>}
+          </section>
+        )}
+
         {section === "add-product" && (
           <section className="admin-card admin-product-editor">
             <p className="eyebrow">{editingProduct ? "EDIT CATALOGUE ITEM" : "NEW CATALOGUE ITEM"}</p><h2>Product details</h2>
             <form className="admin-form" key={editingProduct?._id || "new-product"} onSubmit={saveProduct}>
               <label>Product name<input name="name" defaultValue={editingProduct?.name || ""} required maxLength={160} /></label>
-              <label>SKU<input name="sku" defaultValue={editingProduct?.sku || ""} required maxLength={40} /></label>
-              <label>Category<select name="category" defaultValue={editingProduct?.category || ""} required><option value="">Choose category</option><option>Necklaces</option><option>Earrings</option><option>Rings</option><option>Bracelets</option><option>Wedding</option></select></label>
+              <label>SKU <small className="optional-label">Optional</small><input name="sku" defaultValue={editingProduct?.sku || ""} maxLength={40} placeholder="Auto generated if empty" /></label>
+              <label>Category<span className="category-select-wrap"><select name="category" defaultValue={editingProduct?.category || ""} required><option value="">Choose category</option>{[...new Set([...categories.map((category) => category.name), editingProduct?.category].filter(Boolean))].map((name) => <option key={name}>{name}</option>)}</select><FiChevronRight aria-hidden="true" /></span><small className="category-field-hint">Manage options on the Categories page.</small></label>
               <label>Collection<input name="collection" defaultValue={editingProduct?.collection || ""} maxLength={80} /></label>
               <label>Price (INR)<input name="price" type="number" min="0" step="1" defaultValue={editingProduct?.price ?? ""} required /></label>
-              <label>Stock<input name="stock" type="number" min="0" step="1" defaultValue={editingProduct?.stock ?? 0} required /></label>
+              <label>Stock<input name="stock" type="number" min="0" step="1" defaultValue={editingProduct?.stock ?? 0} /></label>
               <label>Sizes, comma-separated<input name="sizes" defaultValue={(editingProduct?.sizes || []).join(", ")} placeholder="16 in, 18 in" /></label>
               <label>Material<input name="material" defaultValue={editingProduct?.material || ""} maxLength={300} /></label>
-              <label className="admin-wide">Description<textarea name="description" defaultValue={editingProduct?.description || ""} required maxLength={8000} rows="4" /></label>
+              <label className="admin-wide">Description <small className="optional-label">Optional</small><textarea name="description" defaultValue={editingProduct?.description || ""} maxLength={8000} rows="4" placeholder="Add product details when available" /></label>
               <div className="admin-wide">
                 <p className="admin-image-upload-title">Product photos (up to 4). Existing photos appear in their boxes; choose a new photo to replace one.</p>
                 <div className="admin-image-upload-grid">
@@ -392,6 +422,7 @@ export default function AdminDashboard() {
                 </div>
                 {imageSlots.some((slot) => slot?.file) && <small className="admin-image-selected-count">{imageSlots.filter((slot) => slot?.file).length} replacement photo(s) selected · selected photos upload together</small>}
               </div>
+              <label>Product label <small className="optional-label">Optional</small><select name="badge" defaultValue={editingProduct?.badge || ""}><option value="">No label</option><option value="Bestseller">Bestseller</option><option value="Limited">Limited edition</option><option value="Wedding edit">Wedding edit</option><option value="Handcrafted">Handcrafted</option><option value="Sale">Sale</option></select></label>
               <label className="admin-checkbox"><input name="featured" type="checkbox" defaultChecked={editingProduct?.featured || false} /> Featured on home</label>
               <label className="admin-checkbox"><input name="isNew" type="checkbox" defaultChecked={editingProduct?.isNew || false} /> New arrival</label>
               <div className="admin-wide"><button className="button button-dark" type="submit" disabled={busy}>{busy ? <><FiLoader className="loading-spinner" /> {uploadProgress || (editingProduct ? "Updating product…" : "Saving product…")}</> : <>{editingProduct ? "Save changes" : "Save product"} <FiArrowRight /></>}</button></div>
@@ -403,7 +434,14 @@ export default function AdminDashboard() {
         {section === "orders" && (
           <section className="admin-card">
             <div className="admin-card-heading"><div><p className="eyebrow">ORDER MANAGEMENT</p><h2>Customer orders</h2></div></div>
-            {orders.length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th><th>Update</th></tr></thead><tbody>{orders.map((order) => <tr key={order._id}><td><strong>{order.orderNumber}</strong><small>{new Date(order.createdAt).toLocaleDateString()}</small></td><td>{order.userId?.displayName || order.userId?.phone || order.userId?.email || "Customer"}</td><td>{formatINR(order.total)}</td><td>{order.paymentMethod}<br /><select value={order.paymentStatus} disabled={busy || order.paymentStatus === "refunded"} onChange={(event) => setPaymentStatus(order._id, event.target.value)} aria-label={"Update payment for " + order.orderNumber}><option value="pending">pending</option><option value="paid">paid</option></select></td><td><span className="admin-status">{statusLabels[order.fulfillmentStatus] || order.fulfillmentStatus}</span></td><td><select value={order.fulfillmentStatus} disabled={busy || ["cancelled", "refund", "delivered"].includes(order.fulfillmentStatus)} onChange={(event) => setOrderStatus(order._id, event.target.value)} aria-label={"Update " + order.orderNumber + " status"}>{[order.fulfillmentStatus, ...(statusTransitions[order.fulfillmentStatus] || [])].map((status) => <option key={status} value={status}>{statusLabels[status] || status}</option>)}</select></td></tr>)}</tbody></table></div> : <p className="admin-empty">No orders have been placed yet.</p>}
+            {orders.length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th><th>Update</th><th>Tracking location</th></tr></thead><tbody>{orders.map((order) => <tr key={order._id}><td><strong>{order.orderNumber}</strong><small>{new Date(order.createdAt).toLocaleDateString()}</small></td><td>{order.userId?.displayName || order.userId?.phone || order.userId?.email || "Customer"}</td><td>{formatINR(order.total)}</td><td>{[["paymentMethod", paymentMethods], ["paymentStatus", paymentStates]].map(([field, labels]) => (
+                  <select key={field} className="order-badge" data-state={order[field]} value={order[field]}
+                    aria-label={(field === "paymentMethod" ? "Payment method for " : "Payment status for ") + order.orderNumber}
+                    disabled={busy || order.paymentStatus === "refunded" || ["cancelled", "refund"].includes(order.fulfillmentStatus)}
+                    onChange={event => setPaymentStatus(order._id, { [field]: event.target.value })}>
+                    {Object.entries(labels).filter(([key]) => key !== "refunded" || order[field] === key).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
+                  </select>
+                ))}</td><td><Badge value={order.fulfillmentStatus} /></td><td><select value={order.fulfillmentStatus} disabled={busy || ["cancelled", "refund"].includes(order.fulfillmentStatus)} onChange={(event) => setOrderStatus(order._id, event.target.value)} aria-label={"Update " + order.orderNumber + " status"}>{[order.fulfillmentStatus, ...(statusTransitions[order.fulfillmentStatus] || [])].map((status) => <option key={status} value={status}>{statusLabels[status] || status}</option>)}</select></td><td><form onSubmit={event => saveLocation(event, order)}><input name="location" maxLength={120} required placeholder="City or delivery hub" aria-label={"Tracking location for " + order.orderNumber} /><button className="admin-text-button" disabled={busy}>Add update</button></form></td></tr>)}</tbody></table></div> : <p className="admin-empty">No orders have been placed yet.</p>}
           </section>
         )}
         {section === "returns" && (

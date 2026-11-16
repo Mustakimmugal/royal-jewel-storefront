@@ -86,16 +86,16 @@ export const api = {
       headers: { Authorization: "Bearer " + accessToken },
       body: JSON.stringify({ status }),
     }),
-  register: (payload: { email: string; displayName: string; password: string; recoveryAnswers: Array<{ questionId: string; answer: string }> }) =>
+  register: (payload: { phone: string; email?: string; displayName: string; password: string; recoveryAnswers: Array<{ questionId: string; answer: string }> }) =>
     request<AuthSession>("/auth/register", {
       method: "POST",
       body: JSON.stringify(payload),
     }),
 
-  login: (email: string, password: string) =>
+  login: (identifier: string, password: string) =>
     request<AuthSession>("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ identifier, password }),
     }),
 
   requestPasswordReset: (email: string) =>
@@ -119,6 +119,9 @@ export const api = {
   refreshSession: () =>
     request<AuthSession>("/auth/refresh", { method: "POST" }),
 
+  categories: () => request<{ categories: Array<{ _id: string; name: string }> }>("/categories"),
+  createCategory: (accessToken: string, name: string) => request<{ category: { _id: string; name: string } }>("/categories", { method: "POST", headers: { Authorization: "Bearer " + accessToken }, body: JSON.stringify({ name }) }),
+  deleteCategory: (accessToken: string, categoryId: string) => request<void>("/categories/" + categoryId, { method: "DELETE", headers: { Authorization: "Bearer " + accessToken } }),
   adminProducts: (accessToken: string) =>
     request<{ products: ApiProduct[] }>("/products/admin", {
       headers: { Authorization: "Bearer " + accessToken },
@@ -242,11 +245,15 @@ export const api = {
       headers: { Authorization: "Bearer " + accessToken },
     }),
 
-  updatePaymentStatus: (accessToken: string, orderId: string, paymentStatus: string) =>
+  updatePaymentStatus: (accessToken: string, orderId: string, changes: { paymentStatus?: string; paymentMethod?: string }) =>
     request<{ order: Record<string, any> }>("/orders/admin/" + orderId + "/payment-status", {
       method: "PATCH",
       headers: { Authorization: "Bearer " + accessToken },
-      body: JSON.stringify({ paymentStatus }),
+      body: JSON.stringify(changes),
+    }),
+  updateOrderLocation: (accessToken: string, orderId: string, fulfillmentStatus: string, location: string) =>
+    request("/orders/admin/" + orderId + "/location", {
+      method: "PATCH", headers: { Authorization: "Bearer " + accessToken }, body: JSON.stringify({ fulfillmentStatus, location }),
     }),
   updateOrderStatus: (accessToken: string, orderId: string, fulfillmentStatus: string) =>
     request<{ order: Record<string, any> }>("/orders/admin/" + orderId + "/status", {

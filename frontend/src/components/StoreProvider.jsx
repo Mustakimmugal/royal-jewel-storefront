@@ -61,6 +61,7 @@ export default function StoreProvider({ children }) {
   const { user, accessToken, ready: authReady } = useAuth();
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [syncedUser, setSyncedUser] = useState("");
@@ -72,6 +73,7 @@ export default function StoreProvider({ children }) {
 
   useEffect(() => {
     let active = true;
+    api.categories().then(({ categories: items }) => { if (active) setCategories(items); }).catch(() => {});
     api.products()
       .then(({ products: remoteProducts }) => {
         if (active) setProducts(remoteProducts.map(toStoreProduct));
@@ -188,6 +190,7 @@ export default function StoreProvider({ children }) {
     <StoreContext.Provider value={{
       products,
       productsLoading,
+      categories,
       cart: visibleCart,
       wishlist: visibleWishlist,
       cartCount,

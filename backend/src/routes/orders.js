@@ -129,6 +129,7 @@ router.post("/", authenticate, async (req, res, next) => {
       paymentMethod: "COD",
       paymentStatus: "pending",
       fulfillmentStatus: "pending",
+      trackingHistory: [{ status: "pending" }],
     });
     return res.status(201).json({ order });
   } catch (error) {
@@ -202,7 +203,7 @@ router.patch("/admin/:id/status", authenticate, requirePermission("orders:write"
       processing: ["packed", "shipped", "cancelled"],
       packed: ["shipped", "cancelled"],
       shipped: ["delivered"],
-      delivered: ["refund"],
+      delivered: ["pending", "processing", "packed", "shipped", "refund"],
       cancelled: [],
       refund: [],
     };
@@ -217,6 +218,7 @@ router.patch("/admin/:id/status", authenticate, requirePermission("orders:write"
         await Product.updateOne({ _id: item.productId }, { $inc: { stock: item.quantity } });
       }
     }
+    order.trackingHistory.push({ status: nextStatus });
     order.fulfillmentStatus = nextStatus;
     if (nextStatus === "refund") order.paymentStatus = "refunded";
     await order.save();
@@ -225,18 +227,41 @@ router.patch("/admin/:id/status", authenticate, requirePermission("orders:write"
     return next(error);
   }
 });
+router.patch("/admin/:id/location", authenticate, requirePermission("orders:write"), async (req, res, next) => {
+  try {
+    const location = req.body?.location;
+    if (typeof req.body?.fulfillmentStatus !== "string") {
+      return res.status(400).json({ error: { code: "INVALID_STATUS", message: "Include the current order status." } });
+    }
+    if (typeof location !== "string" || !location.trim() || location.trim().length > 120) {
+      return res.status(400).json({ error: { code: "INVALID_LOCATION", message: "Enter a location of up to 120 characters." } });
+    }
+    const order = await Order.findOneAndUpdate(
+      { _id: req.params.id, fulfillmentStatus: req.body.fulfillmentStatus },
+      { $push: { trackingHistory: { status: req.body.fulfillmentStatus, location: location.trim(), at: new Date() } } },
+      { new: true, runValidators: true },
+    );
+    if (!order) return res.status(409).json({ error: { code: "ORDER_CHANGED", message: "Refresh the order before adding a location." } });
+    return res.json({ order });
+  } catch (error) { return next(error); }
+});
+
 router.patch("/admin/:id/payment-status", authenticate, requirePermission("orders:write"), async (req, res, next) => {
   try {
     const paymentStatus = req.body?.paymentStatus;
-    if (!["pending", "paid"].includes(paymentStatus)) {
-      return res.status(400).json({ error: { code: "INVALID_PAYMENT_STATUS", message: "Choose pending or paid." } });
+    const paymentMethod = req.body?.paymentMethod;
+    if ((paymentStatus === undefined && paymentMethod === undefined) ||
+        (paymentStatus !== undefined && !["pending", "processing", "paid", "failed"].includes(paymentStatus)) ||
+        (paymentMethod !== undefined && !["COD", "online", "offline"].includes(paymentMethod))) {
+      return res.status(400).json({ error: { code: "INVALID_PAYMENT_STATUS", message: "Choose a valid payment method or status." } });
     }
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ error: { code: "ORDER_NOT_FOUND", message: "This order could not be found." } });
     if (order.paymentStatus === "refunded" || ["cancelled", "refund"].includes(order.fulfillmentStatus)) {
       return res.status(409).json({ error: { code: "PAYMENT_FINAL", message: "A refunded payment cannot be changed." } });
     }
-    order.paymentStatus = paymentStatus;
+    if (paymentMethod !== undefined) order.paymentMethod = paymentMethod;
+    if (paymentStatus !== undefined) order.paymentStatus = paymentStatus;
     await order.save();
     return res.json({ order });
   } catch (error) {
@@ -252,6 +277,7 @@ router.patch("/mine/:id/cancel", authenticate, async (req, res, next) => {
       return res.status(409).json({ error: { code: "ORDER_CANNOT_CANCEL", message: "This order can no longer be cancelled." } });
     }
     for (const item of order.items) await Product.updateOne({ _id: item.productId }, { $inc: { stock: item.quantity } });
+    order.trackingHistory.push({ status: "cancelled" });
     order.fulfillmentStatus = "cancelled";
     order.cancelledAt = new Date();
     await order.save();
@@ -285,6 +311,7 @@ router.patch("/admin/:id/return", authenticate, requirePermission("orders:write"
     order.returnRequest.status = status;
     order.returnRequest.adminNote = adminNote;
     if (status === "approved") {
+      order.trackingHistory.push({ status: "refund" });
       order.fulfillmentStatus = "refund";
       if (order.paymentStatus === "paid") {
         order.paymentStatus = "refunded";
@@ -301,7 +328,7 @@ router.patch("/admin/:id/return", authenticate, requirePermission("orders:write"
 router.get("/mine", authenticate, async (req, res, next) => {
   try {
     const orders = await Order.find({ userId: req.auth.sub })
-      .select("orderNumber items shippingAddress subtotal shippingFee discount coupon total currency paymentMethod paymentStatus fulfillmentStatus returnRequest refundStatus createdAt cancelledAt")
+      .select("orderNumber items shippingAddress subtotal shippingFee discount coupon total currency paymentMethod paymentStatus fulfillmentStatus returnRequest refundStatus trackingHistory createdAt cancelledAt")
       .sort({ createdAt: -1 })
       .limit(50)
       .lean();

@@ -19,7 +19,7 @@ export default function Login() {
   const { signIn, user, ready } = useAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  usePageMeta("Sign in", "Sign in to your MH JEWELLERS account with email and password.");
+  usePageMeta("Sign in", "Sign in to your MH JEWELLERS account with your phone or email and password.");
 
   useEffect(() => {
     if (!ready || !user) return;
@@ -32,7 +32,7 @@ export default function Login() {
     setError("");
     setBusy(true);
     try {
-      const signedInUser = await signIn(String(values.email), String(values.password));
+      const signedInUser = await signIn(String(values.identifier), String(values.password));
       navigate(redirectTarget(params, signedInUser), { replace: true });
     } catch (signInError) {
       setError(signInError.message || "We could not sign you in. Check your email and password.");
@@ -43,14 +43,14 @@ export default function Login() {
 
   return (
     <>
-      <PageIntro eyebrow="YOUR MH JEWELLERS ACCOUNT" title="A little closer." copy="Sign in to place orders and manage your account. You can browse the collection without signing in." />
+      <PageIntro eyebrow="YOUR MH JEWELLERS ACCOUNT" title="A little closer." copy="Sign in with your phone number or email to place orders and manage your account. You can browse the collection without signing in." />
       <section className="section page-wrap auth-page">
         <div className="auth-panel">
-          <p className="eyebrow">EMAIL AND PASSWORD</p>
+          <p className="eyebrow">PHONE OR EMAIL AND PASSWORD</p>
           <h2>Sign in to continue.</h2>
           <form className="auth-form" onSubmit={handleSubmit}>
-            <label htmlFor="login-email">Email address</label>
-            <input id="login-email" name="email" type="email" autoComplete="email" maxLength={254} placeholder="you@example.com" required />
+            <label htmlFor="login-identifier">Phone number or email address</label>
+            <input id="login-identifier" name="identifier" type="text" autoComplete="username" maxLength={254} placeholder="+91 98765 43210 or you@example.com" required />
             <label htmlFor="login-password">Password</label>
             <PasswordField id="login-password" autoComplete="current-password" minLength={6} />
             {error && <p className="auth-error" role="alert">{error}</p>}

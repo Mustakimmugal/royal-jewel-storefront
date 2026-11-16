@@ -7,6 +7,7 @@ import rateLimit from "express-rate-limit";
 import { config } from "./config.js";
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/products.js";
+import categoryRoutes from "./routes/categories.js";
 import orderRoutes from "./routes/orders.js";
 import contactRoutes from "./routes/contact.js";
 import newsletterRoutes from "./routes/newsletter.js";
@@ -51,6 +52,7 @@ app.use((req, res, next) => {
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/categories", categoryRoutes);
 app.use("/api/products/media", mediaRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/contact", contactRoutes);

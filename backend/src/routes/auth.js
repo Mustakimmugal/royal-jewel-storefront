@@ -35,6 +35,16 @@ const cookieOptions = {
 function hashToken(value) {
   return createHash("sha256").update(value).digest("hex");
 }
+function normalizePhone(value) {
+  if (typeof value !== "string") return "";
+  const trimmed = value.trim();
+  if (!/^\+?[\d ()-]+$/.test(trimmed)) return "";
+  const digits = trimmed.replace(/\D/g, "");
+  if (/^[6-9]\d{9}$/.test(digits) && !trimmed.startsWith("+")) return "+91" + digits;
+  if (/^0[6-9]\d{9}$/.test(digits)) return "+91" + digits.slice(1);
+  if (/^91[6-9]\d{9}$/.test(digits)) return "+" + digits;
+  return trimmed.startsWith("+") && /^[1-9]\d{6,14}$/.test(digits) ? "+" + digits : "";
+}
 function normalizeEmail(value) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
@@ -75,35 +85,46 @@ async function startSession(user, res) {
 router.post("/register", registerLimiter, async (req, res, next) => {
   try {
     const email = normalizeEmail(req.body?.email);
+    const phone = normalizePhone(req.body?.phone);
     const displayName = typeof req.body?.displayName === "string" ? req.body.displayName.trim() : "";
     const password = req.body?.password;
     const answers = parseRecoveryAnswers(req.body?.recoveryAnswers);
-    if (!validEmail(email) || displayName.length < 2 || displayName.length > 100 || !validPassword(password) || !answers) {
-      return res.status(400).json({ error: { code: "INVALID_REGISTRATION", message: "Enter a valid name and email, a password of at least 6 characters, and two different recovery questions with answers." } });
+    if (!phone || (email && !validEmail(email)) || displayName.length < 2 || displayName.length > 100 || !validPassword(password) || !answers) {
+      return res.status(400).json({ error: { code: "INVALID_REGISTRATION", message: "Enter a valid name and phone number, an optional valid email, and a password of at least 6 characters, and two different recovery questions with answers." } });
     }
-    if (await User.exists({ email })) {
-      return res.status(409).json({ error: { code: "ACCOUNT_EXISTS", message: "An account already uses this email. Sign in or reset its password." } });
+    const existing = await User.findOne({ $or: [{ phone }, ...(email ? [{ email }] : [])] }).select("phone email");
+    if (existing) {
+      const duplicatePhone = existing.phone === phone;
+      return res.status(409).json({ error: { code: duplicatePhone ? "PHONE_ALREADY_REGISTERED" : "ACCOUNT_EXISTS", message: duplicatePhone ? "This phone number is already registered. Sign in with your phone and password." : "An account already uses this email. Sign in or reset its password." } });
     }
     const recoveryHashes = [];
     for (const { questionId, answer } of answers) recoveryHashes.push({ questionId, answerHash: await hashRecoveryAnswer(answer) });
     const passwordHash = await hashPassword(password);
-    const user = await User.create({ email, displayName, passwordHash, recoveryAnswers: recoveryHashes, role: "customer", permissions: [] });
+    const user = await User.create({ phone, ...(email ? { email } : {}), displayName, passwordHash, recoveryAnswers: recoveryHashes, role: "customer", permissions: [] });
     return res.status(201).json(await startSession(user, res));
   } catch (error) {
+    if (error?.code === 11000 && error?.keyPattern?.phone) {
+      return res.status(409).json({ error: { code: "PHONE_ALREADY_REGISTERED", message: "This phone number is already registered. Sign in with your phone and password." } });
+    }
+    if (error?.code === 11000 && error?.keyPattern?.email) {
+      return res.status(409).json({ error: { code: "ACCOUNT_EXISTS", message: "An account already uses this email. Sign in or reset its password." } });
+    }
     return next(error);
   }
 });
 
 router.post("/login", loginLimiter, async (req, res, next) => {
   try {
-    const email = normalizeEmail(req.body?.email);
+    const identifier = typeof req.body?.identifier === "string" ? req.body.identifier.trim() : (typeof req.body?.email === "string" ? req.body.email.trim() : "");
+    const email = normalizeEmail(identifier);
+    const phone = normalizePhone(identifier);
     const password = req.body?.password;
-    if (!validEmail(email) || typeof password !== "string" || password.length > 128) {
-      return res.status(400).json({ error: { code: "INVALID_CREDENTIALS", message: "Enter your email and password." } });
+    if ((!validEmail(email) && !phone) || typeof password !== "string" || password.length > 128) {
+      return res.status(400).json({ error: { code: "INVALID_CREDENTIALS", message: "Enter your registered phone number or email and password." } });
     }
-    const user = await User.findOne({ email }).select("+passwordHash");
+    const user = await User.findOne(validEmail(email) ? { email } : { phone }).select("+passwordHash");
     if (!user || !user.isActive || !user.passwordHash || !(await verifyPassword(password, user.passwordHash))) {
-      return res.status(401).json({ error: { code: "INVALID_CREDENTIALS", message: "Email or password is incorrect. Use Forgot password if this is an older account." } });
+      return res.status(401).json({ error: { code: "INVALID_CREDENTIALS", message: "Phone or email and password are incorrect. Use Forgot password if this is an older account." } });
     }
     return res.json(await startSession(user, res));
   } catch (error) {

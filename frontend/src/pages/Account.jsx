@@ -1,3 +1,4 @@
+import { Badge, paymentMethods, paymentStates, Tracking } from "../components/OrderStatus";
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { FiArrowRight, FiLogOut, FiPackage } from "react-icons/fi";
@@ -98,9 +99,10 @@ export default function Account() {
             <div className="account-order-list">
               {orders.map((order) => (
                 <article className="account-order-card" key={order._id}>
-                  <div className="account-order-top"><div><span className="account-order-number">{order.orderNumber}</span><small>{new Date(order.createdAt).toLocaleDateString()}</small></div><span className="admin-status">{order.fulfillmentStatus}</span></div>
+                  <div className="account-order-top"><div><span className="account-order-number">{order.orderNumber}</span><small>{new Date(order.createdAt).toLocaleDateString()}</small></div><Badge value={order.fulfillmentStatus} /></div>
                   <div className="account-order-items">{order.items.map((item) => <div key={item.productSlug + item.size}><img src={item.image} alt="" /><span>{item.productName}<small>{item.size} · Qty {item.quantity}</small></span><strong>{formatINR(item.lineTotal)}</strong></div>)}</div>
-                  <div className="account-order-bottom"><span>{order.paymentMethod === "COD" ? "Cash on delivery" : order.paymentMethod} · {order.paymentStatus}</span><strong>{formatINR(order.total)}</strong></div>
+                  <div className="account-order-bottom"><span><Badge value={order.paymentMethod} labels={paymentMethods} /> <Badge value={order.paymentStatus} labels={paymentStates} /></span><strong>{formatINR(order.total)}</strong></div>
+                  <Tracking order={order} />
                   {order.shippingAddress && <p className="account-order-address">Delivering to {order.shippingAddress.city}, {order.shippingAddress.country}</p>}
                   {order.returnRequest?.isRequested && <p className="account-order-address">Return request: {order.returnRequest.status}</p>}
                   <div className="account-order-actions">
